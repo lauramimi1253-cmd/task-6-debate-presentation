@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Statement 4 – The Netherlands</title>
+<style>
+  :root {
+    --nl-red: #AE1C28;
+    --nl-blue: #21468B;
+    --nl-white: #FFFFFF;
+    --nl-orange: #FF6B00;
+    --dark: #0f1620;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; background: #000; }
+  
+  .deck { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
+
+  .slide {
+    position: absolute; inset: 0;
+    display: flex;
+    opacity: 0; visibility: hidden;
+    transform: scale(1.05);
+    transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
+    color: white;
+  }
+  .slide.active { opacity: 1; visibility: visible; transform: scale(1); z-index: 2; }
+
+  /* Full Screen Split Layouts */
+  .split { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: 100%; }
+  .split-60-40 { display: grid; grid-template-columns: 3fr 2fr; width: 100%; height: 100%; }
+  
+  .text-side {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 8vh 6vw; z-index: 3; height: 100%;
+  }
+  
+  .image-side {
+    background-size: cover; background-position: center; height: 100%;
+    position: relative;
+  }
+
+  /* Full Screen Content Layout (Centered but using full width/height) */
+  .full-content {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 6vh 8vw; z-index: 3;
+  }
+
+  /* Backgrounds */
+  .bg-dark { background: #0f1620; }
+  .bg-blue { background: var(--nl-blue); }
+  .bg-orange { background: linear-gradient(135deg, #FF6B00 0%, #AE1C28 100%); }
+  .bg-image-bg { background-size: cover; background-position: center; position: absolute; inset: 0; z-index: 1; filter: brightness(0.4); }
+  
+  /* Typography */
+  .kicker {
+    font-size: clamp(1rem, 1.5vw, 1.5rem); letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--nl-orange); font-weight: 800; margin-bottom: 2vh;
+  }
+  .kicker.white { color: white; }
+  
+  h1 { font-size: clamp(3rem, 6vw, 6rem); font-weight: 900; line-height: 1.05; margin-bottom: 3vh; text-transform: uppercase; }
+  h2 { font-size: clamp(2rem, 4vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 4vh; }
+  .accent { color: var(--nl-orange); }
+  
+  p { font-size: clamp(1.1rem, 1.6vw, 1.6rem); line-height: 1.6; color: #e2e8f0; margin-bottom: 2vh;}
+  
+  /* Stats Grid Full Width */
+  .stat-row { display: flex; gap: 2vw; width: 100%; margin-top: 4vh; }
+  .stat-box {
+    flex: 1; background: rgba(255,255,255,0.1); padding: 4vh 2vw; border-radius: 20px;
+    backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); text-align: center;
+  }
+  .stat-box .num { font-size: clamp(3rem, 5vw, 5rem); font-weight: 900; color: var(--nl-orange); line-height: 1; margin-bottom: 1vh; }
+  .stat-box .lbl { font-size: clamp(1rem, 1.2vw, 1.2rem); font-weight: 600; }
+
+  /* Cards Full Width */
+  .card-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2vw; width: 100%; margin-top: 4vh; }
+  .card {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    padding: 5vh 3vw; border-radius: 20px; text-align: center; backdrop-filter: blur(10px);
+  }
+  .card .icon { font-size: 4rem; margin-bottom: 2vh; }
+  .card h3 { font-size: 1.8rem; color: var(--nl-orange); margin-bottom: 2vh; }
+  .card p { font-size: 1.2rem; margin: 0; }
+
+  /* Lists Full Width */
+  .list-full { list-style: none; width: 100%; margin-top: 3vh; }
+  .list-full li {
+    display: flex; align-items: center; gap: 2vw; font-size: clamp(1.2rem, 1.8vw, 1.8rem);
+    padding: 2.5vh 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-weight: 500;
+  }
+  .list-full li:last-child { border-bottom: none; }
+  .list-full li .num {
+    background: var(--nl-orange); color: white; width: 50px; height: 50px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1.5rem; flex-shrink: 0;
+  }
+
+  /* Fact Box */
+  .fact-box {
+    width: 100%; margin-top: 4vh; padding: 4vh 3vw;
+    background: rgba(255,255,255,0.15); border-left: 10px solid var(--nl-orange);
+    border-radius: 0 20px 20px 0; font-size: clamp(1.1rem, 1.5vw, 1.5rem);
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed; bottom: 3vh; left: 50%; transform: translateX(-50%);
+    z-index: 100; display: flex; gap: 15px; background: rgba(0,0,0,0.8);
+    padding: 15px 30px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2);
+  }
+  .nav button {
+    background: none; border: 2px solid white; color: white; width: 45px; height: 45px;
+    border-radius: 50%; cursor: pointer; font-size: 1.2rem; transition: 0.3s;
+  }
+  .nav button:hover { background: var(--nl-orange); border-color: var(--nl-orange); }
+  .counter { color: white; font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; }
+  .progress { position: fixed; bottom: 0; left: 0; height: 6px; background: var(--nl-orange); transition: 0.3s; }
+
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: TITLE (Split Screen) -->
+  <section class="slide active">
+    <div class="split">
+      <div class="text-side bg-blue">
+        <div class="kicker">Statement 4</div>
+        <h1>The <span class="accent">Netherlands</span>:<br>Tourism & Livability</h1>
+        <p>Should the Dutch government limit tourists and foreign property investors in major cities to protect residents' quality of life?</p>
+        <div class="fact-box" style="margin-top:4vh; border-left-color:white;">
+          <strong>Position:</strong> Targeted national limits — not blanket bans.
+        </div>
+      </div>
+      <div class="image-side" style="background-image: url('https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=1920&q=80');"></div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: CONTEXT (Full Screen Background) -->
+  <section class="slide">
+    <div class="bg-image-bg" style="background-image: url('https://images.unsplash.com/photo-1512470876302-972faa2aa9a4?w=1920&q=80');"></div>
+    <div class="full-content bg-dark" style="background: rgba(15,22,32,0.85);">
+      <div class="kicker">National Context</div>
+      <h2>Not just Amsterdam — the whole country</h2>
+      <p>The pressure from tourism and investors affects Amsterdam, Rotterdam, The Hague, Utrecht, and student cities like Eindhoven and Groningen.</p>
+      
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="num">~400K</div>
+          <div class="lbl">National housing shortage</div>
+        </div>
+        <div class="stat-box">
+          <div class="num">~47M</div>
+          <div class="lbl">Tourist overnight stays per year</div>
+        </div>
+        <div class="stat-box">
+          <div class="num">18M</div>
+          <div class="lbl">People in one of Europe's densest countries</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: FOR (Split Screen with Cards) -->
+  <section class="slide">
+    <div class="split-60-40">
+      <div class="text-side bg-dark">
+        <div class="kicker" style="color: #4ade80;">Arguments FOR</div>
+        <h2>Why the Netherlands should act</h2>
+        <div class="card-row">
+          <div class="card">
+            <div class="icon">🏠</div>
+            <h3>Housing</h3>
+            <p>Returning buy-to-let homes to Dutch families reduces the shortage.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🌿</div>
+            <h3>Quality of Life</h3>
+            <p>Less noise and overcrowding in historic centers.</p>
+          </div>
+          <div class="card">
+            <div class="icon">🏘️</div>
+            <h3>Social Fabric</h3>
+            <p>Teachers and nurses should afford to live in their cities.</p>
+          </div>
+        </div>
+      </div>
+      <div class="image-side" style="background-image: url('https://images.unsplash.com/photo-1584002341120-cb9d0c72a4f3?w=1920&q=80');"></div>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: AGAINST (Split Screen with Cards) -->
+  <section class="slide">
+    <div class="split-60-40">
+      <div class="image-side" style="background-image: url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1920&q=80');"></div>
+      <div class="text-side" style="background: var(--nl-red);">
+        <div class="kicker white">Arguments AGAINST</div>
+        <h2>Why we must be careful</h2>
+        <div class="card-row">
+          <div class="card">
+            <div class="icon">💶</div>
+            <h3>Economy</h3>
+            <p>Tourism contributes around 4% of Dutch GDP and creates jobs.</p>
+          </div>
+          <div class="card">
+            <div class="icon">📈</div>
+            <h3>Investment</h3>
+            <p>The Netherlands relies on foreign investment and talent.</p>
+          </div>
+          <div class="card">
+            <div class="icon">⚖️</div>
+            <h3>Enforcement</h3>
+            <p>Rules must be applied by 342 municipalities under EU law.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: SOLUTIONS (Full Screen List) -->
+  <section class="slide">
+    <div class="bg-image-bg" style="background-image: url('https://images.unsplash.com/photo-1459679749680-18eb1eb37418?w=1920&q=80');"></div>
+    <div class="full-content bg-blue" style="background: rgba(33,70,139,0.9);">
+      <div class="kicker" style="color: var(--nl-orange);">National Solutions</div>
+      <h2>Targeted, national, and local</h2>
+      <ul class="list-full">
+        <li><span class="num">1</span> <div><strong>Buy-to-let ban:</strong> A national law (2022) lets every municipality ban investor purchases in designated areas.</div></li>
+        <li><span class="num">2</span> <div><strong>Higher transfer tax:</strong> Raised to 10.4% for investors (vs. 2% for owner-occupiers).</div></li>
+        <li><span class="num">3</span> <div><strong>Affordable Rent Act:</strong> Regulates mid-market rents nationally (July 2024).</div></li>
+        <li><span class="num">4</span> <div><strong>National housing target:</strong> 100,000 new homes per year.</div></li>
+      </ul>
+      <div class="fact-box">
+        <strong>Interesting fact:</strong> The Netherlands was one of the first EU countries to create a national legal framework for buy-to-let restrictions.
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: CONCLUSION (Full Screen Orange/Red) -->
+  <section class="slide">
+    <div class="full-content bg-orange">
+      <div class="kicker white" style="text-align: center; justify-content: center;">Conclusion</div>
+      <h1 style="text-align: center; font-size: clamp(4rem, 8vw, 8rem); line-height: 1;">Balance,<br>not bans.</h1>
+      <p style="text-align: center; max-width: 900px; margin: 0 auto; font-size: 1.8rem;">
+        The Netherlands should apply targeted, national and locally enforced limits — not blanket prohibitions — to protect housing and livability.
+      </p>
+      <div style="text-align: center; margin-top: 5vh;">
+        <h2 style="font-size: 2rem;">Thank you. 🇳🇱</h2>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="nav">
+  <button id="prev">←</button>
+  <div class="counter" id="counter">1 / 6</div>
+  <button id="next">→</button>
+</div>
+<div class="progress" id="progress" style="width: 16.66%"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  let current = 0;
+
+  function showSlide(index) {
+    if (index < 0) index = 0;
+    if (index >= slides.length) index = slides.length - 1;
+    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+    current = index;
+    counter.textContent = `${index + 1} / ${slides.length}`;
+    progress.style.width = `${((index + 1) / slides.length) * 100}%`;
+  }
+
+  document.getElementById('next').addEventListener('click', () => showSlide(current + 1));
+  document.getElementById('prev').addEventListener('click', () => showSlide(current - 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); showSlide(current + 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); showSlide(current - 1); }
+  });
+</script>
+
+</body>
+</html>
